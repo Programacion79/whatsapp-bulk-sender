@@ -20,24 +20,55 @@ const io = socketIo(server, {
 });
 
 const PORT = process.env.PORT || 3000;
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const MAX_CONTACTS = parseInt(process.env.MAX_CONTACTS_PER_BATCH) || 50;
+const MIN_DELAY = parseInt(process.env.MESSAGE_DELAY_MIN) || 8000;
+const MAX_DELAY = parseInt(process.env.MESSAGE_DELAY_MAX) || 15000;
+
+// Configuración de CORS para producción
+const corsOptions = {
+    origin: NODE_ENV === 'production' 
+        ? process.env.ALLOWED_ORIGINS?.split(',') || ['https://localhost:3000']
+        : "*",
+    methods: ["GET", "POST"],
+    credentials: true
+};
 
 // Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(cors(corsOptions));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Headers de seguridad para producción
+if (NODE_ENV === 'production') {
+    app.use((req, res, next) => {
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+        res.setHeader('X-Frame-Options', 'DENY');
+        res.setHeader('X-XSS-Protection', '1; mode=block');
+        res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+        next();
+    });
+}
 
 // Configuración de multer para subir archivos
 const upload = multer({ dest: 'uploads/' });
 
-// Cliente de WhatsApp simplificado para mejor rendimiento
+// Cliente de WhatsApp optimizado para producción
 const client = new Client({
-    authStrategy: new LocalAuth(),
+    authStrategy: new LocalAuth({
+        dataPath: NODE_ENV === 'production' ? './session-data' : '.wwebjs_auth'
+    }),
     puppeteer: {
         headless: true,
         args: [
             '--no-sandbox',
-            '--disable-setuid-sandbox'
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--no-zygote',
+            '--disable-gpu'
         ]
     }
 });
