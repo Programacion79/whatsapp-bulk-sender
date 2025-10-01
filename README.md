@@ -36,9 +36,10 @@
 
 ## 🛠️ Instalación
 
-1. **Clona o descarga el proyecto**
+1. **Clona el proyecto**
    ```bash
-   cd WhatsApp-Bulk-Sender
+   git clone https://github.com/Programacion79/whatsapp-bulk-sender.git
+   cd whatsapp-bulk-sender
    ```
 
 2. **Instala las dependencias**
