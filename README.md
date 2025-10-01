@@ -48,6 +48,23 @@
    ```
 
 3. **Inicia el servidor**
+   
+   **Opción A - Menu Principal (Recomendado):**
+   ```bash
+   .\menu.bat
+   ```
+   
+   **Opción B - Inicio Completo:**
+   ```bash
+   .\iniciar-servidor.bat
+   ```
+   
+   **Opción C - Inicio Rápido:**
+   ```bash
+   .\inicio-rapido.bat
+   ```
+   
+   **Opción D - Manual:**
    ```bash
    npm start
    ```
@@ -154,19 +171,45 @@ Variables disponibles:
 - Reduce el tamaño del lote de contactos
 - Reinicia la aplicación periódicamente
 
-## 📁 Estructura del Proyecto
+## �️ Scripts de Administración
+
+### Scripts Disponibles
+
+| Script | Descripción | Uso |
+|--------|-------------|-----|
+| `menu.bat` | **Menu principal** con todas las opciones | `.\menu.bat` |
+| `iniciar-servidor.bat` | Inicio completo con verificaciones | `.\iniciar-servidor.bat` |
+| `inicio-rapido.bat` | Inicio rápido sin verificaciones | `.\inicio-rapido.bat` |
+| `auto-reinicio.bat` | Reinicio automático si el servidor falla | `.\auto-reinicio.bat` |
+| `monitor.bat` | Monitor del sistema en tiempo real | `.\monitor.bat` |
+| `mantenimiento.bat` | Herramientas de mantenimiento y limpieza | `.\mantenimiento.bat` |
+| `publicar.bat` | Guía para publicar en producción | `.\publicar.bat` |
+
+### 🎯 Script Recomendado
+
+**Para uso diario, usa el menu principal:**
+```bash
+.\menu.bat
+```
+
+Este script te dará acceso a todas las funciones con una interfaz amigable.
+
+## �📁 Estructura del Proyecto
 
 ```
 WhatsApp-Bulk-Sender/
 ├── server.js              # Servidor principal
 ├── package.json           # Dependencias
 ├── README.md             # Documentación
+├── *.bat                 # Scripts de administración
 ├── public/               # Archivos estáticos
 │   ├── index.html        # Interfaz principal
 │   ├── app.js           # JavaScript frontend
 │   └── styles.css       # Estilos personalizados
+├── plantillas/          # Plantillas CSV
 ├── uploads/             # Archivos temporales
 ├── reports/             # Reportes de envío
+├── logs/                # Logs del sistema
 └── .wwebjs_auth/        # Sesión de WhatsApp (auto-generado)
 ```
 
