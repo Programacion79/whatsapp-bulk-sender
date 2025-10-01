@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Formatos - WhatsApp Bulk Sender</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1><i class="fas fa-file-excel text-success"></i> Guía de Formatos</h1>
+                    <a href="../index.html" class="btn btn-primary">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                </div>
+
+                <!-- Formato Básico -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4><i class="fas fa-table"></i> Formato Básico</h4>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Campos obligatorios:</strong> nombre, telefono</p>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>nombre</th>
+                                        <th>telefono</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Juan Pérez</td>
+                                        <td>3001234567</td>
+                                    </tr>
+                                    <tr>
+                                        <td>María García</td>
+                                        <td>3007654321</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <a href="ejemplo_contactos.csv" download class="btn btn-primary">
+                            <i class="fas fa-download"></i> Descargar Plantilla
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Formato Candidatos Simple -->
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h4><i class="fas fa-users"></i> Formato Candidatos Simple</h4>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Campos:</strong> nombre, telefono, cargo_aplicado, estado_proceso</p>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>nombre</th>
+                                        <th>telefono</th>
+                                        <th>cargo_aplicado</th>
+                                        <th>estado_proceso</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Ana García</td>
+                                        <td>3001234567</td>
+                                        <td>Desarrollador Senior</td>
+                                        <td>Pre-seleccionado</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Carlos Rodríguez</td>
+                                        <td>3157654321</td>
+                                        <td>Analista de Datos</td>
+                                        <td>Pendiente revisión</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <a href="ejemplo_candidatos_simple.csv" download class="btn btn-success">
+                            <i class="fas fa-download"></i> Descargar Plantilla
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Formato Completo -->
+                <div class="card mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h4><i class="fas fa-clipboard-list"></i> Formato Candidatos Completo</h4>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Todos los campos disponibles:</strong></p>
+                        <ul>
+                            <li><strong>nombre</strong> - Nombre completo</li>
+                            <li><strong>telefono</strong> - Número de teléfono</li>
+                            <li><strong>cargo_aplicado</strong> - Puesto al que aplica</li>
+                            <li><strong>experiencia</strong> - Años de experiencia</li>
+                            <li><strong>nivel_educacion</strong> - Nivel educativo</li>
+                            <li><strong>disponibilidad</strong> - Disponibilidad para iniciar</li>
+                            <li><strong>email</strong> - Correo electrónico</li>
+                            <li><strong>fecha_aplicacion</strong> - Fecha de aplicación</li>
+                        </ul>
+                        <a href="ejemplo_candidatos_completo.csv" download class="btn btn-info">
+                            <i class="fas fa-download"></i> Descargar Plantilla
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Variables para Mensajes -->
+                <div class="card mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h4><i class="fas fa-magic"></i> Variables para Mensajes</h4>
+                    </div>
+                    <div class="card-body">
+                        <p>Puedes usar estas variables en tus mensajes:</p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul>
+                                    <li><code>{nombre}</code> - Nombre del candidato</li>
+                                    <li><code>{cargo}</code> - Cargo al que aplica</li>
+                                    <li><code>{experiencia}</code> - Años de experiencia</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul>
+                                    <li><code>{estado}</code> - Estado del proceso</li>
+                                    <li><code>{empresa}</code> - Empresa actual</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <h6>Ejemplo de mensaje:</h6>
+                            <pre>¡Hola {nombre}!
+
+Has sido seleccionado(a) para el cargo de {cargo}.
+Con tu experiencia de {experiencia}, creemos que serás una gran adición al equipo.
+
+Te contactaremos pronto para coordinar la entrevista.
+
+Saludos cordiales,
+Equipo de RRHH</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formato de Teléfonos -->
+                <div class="card mb-4">
+                    <div class="card-header bg-danger text-white">
+                        <h4><i class="fas fa-phone"></i> Formato de Teléfonos</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-success">✅ Formato CORRECTO:</h6>
+                                <ul>
+                                    <li><code>3001234567</code> (Celular)</li>
+                                    <li><code>3151234567</code> (Celular)</li>
+                                    <li><code>6015551234</code> (Fijo Bogotá)</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-danger">❌ Formato INCORRECTO:</h6>
+                                <ul>
+                                    <li><code>+57 300 123 4567</code></li>
+                                    <li><code>300-123-4567</code></li>
+                                    <li><code>(300) 123-4567</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="alert alert-warning">
+                            <strong>Importante:</strong> Los números deben estar en formato colombiano sin espacios, guiones o paréntesis.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Instrucciones Excel -->
+                <div class="card mb-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h4><i class="fas fa-graduation-cap"></i> Cómo Convertir a Excel</h4>
+                    </div>
+                    <div class="card-body">
+                        <ol>
+                            <li><strong>Descarga</strong> una de las plantillas CSV</li>
+                            <li><strong>Abre Excel</strong> en tu computadora</li>
+                            <li><strong>Ve a:</strong> Datos → Obtener datos → Desde archivo → Desde texto/CSV</li>
+                            <li><strong>Selecciona</strong> el archivo CSV descargado</li>
+                            <li><strong>Configura</strong> la importación (separador: coma)</li>
+                            <li><strong>Guarda</strong> como archivo Excel (.xlsx)</li>
+                        </ol>
+                        
+                        <div class="alert alert-info">
+                            <strong>Tip:</strong> También puedes abrir el CSV directamente en Excel y guardarlo como .xlsx
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Bulk Sender</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .qr-container {
+            text-align: center;
+            padding: 20px;
+        }
+        .progress-container {
+            margin-top: 20px;
+        }
+        .contact-preview {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+            padding: 10px;
+        }
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .status-connected { background-color: #28a745; }
+        .status-disconnected { background-color: #dc3545; }
+        .status-connecting { background-color: #ffc107; }
+        .message-template {
+            font-family: monospace;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 0.375rem;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 bg-dark text-white p-3">
+                <h4><i class="fab fa-whatsapp text-success"></i> WhatsApp Sender</h4>
+                <hr>
+                
+                <!-- Estado de conexión -->
+                <div class="mb-4">
+                    <h6>Estado de Conexión</h6>
+                    <div id="connection-status">
+                        <span class="status-indicator status-connecting"></span>
+                        <span id="status-text">Conectando...</span>
+                    </div>
+                </div>
+
+                <!-- Navegación -->
+                <ul class="nav nav-pills flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" onclick="showSection('connection')">
+                            <i class="fas fa-qrcode"></i> Conexión
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('contacts')">
+                            <i class="fas fa-users"></i> Contactos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('message')">
+                            <i class="fas fa-envelope"></i> Mensaje
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('send')">
+                            <i class="fas fa-paper-plane"></i> Enviar
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Contenido principal -->
+            <div class="col-md-9 p-4">
+                <!-- Sección de Conexión -->
+                <div id="connection-section" class="section">
+                    <h2>Conexión con WhatsApp</h2>
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="qr-container" class="qr-container">
+                                <p>Esperando código QR...</p>
+                                <div id="qr-spinner" class="spinner-border text-success" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                            </div>
+                            <div id="connection-instructions" class="alert alert-info mt-3">
+                                <h6><i class="fas fa-info-circle"></i> Instrucciones:</h6>
+                                <ol>
+                                    <li>Abre WhatsApp en tu teléfono</li>
+                                    <li>Ve a Configuración > Dispositivos vinculados</li>
+                                    <li>Toca "Vincular un dispositivo"</li>
+                                    <li>Escanea el código QR que aparecerá aquí</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de Contactos -->
+                <div id="contacts-section" class="section" style="display: none;">
+                    <h2>Gestión de Contactos</h2>
+                    
+                    <!-- Pestañas para seleccionar modo -->
+                    <ul class="nav nav-tabs mb-3" id="contactTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="manual-tab" data-bs-toggle="tab" data-bs-target="#manual-contact" type="button" role="tab">
+                                <i class="fas fa-user-plus"></i> Contacto Individual
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="bulk-tab" data-bs-toggle="tab" data-bs-target="#bulk-contact" type="button" role="tab">
+                                <i class="fas fa-upload"></i> Carga Masiva (Excel/CSV)
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="contactTabContent">
+                        <!-- Formulario individual -->
+                        <div class="tab-pane fade show active" id="manual-contact" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header bg-primary text-white">
+                                            <h5><i class="fas fa-user-plus"></i> Agregar Contacto Individual</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <form id="manual-contact-form">
+                                                <div class="mb-3">
+                                                    <label for="contact-name" class="form-label">Nombre Completo *</label>
+                                                    <input type="text" class="form-control" id="contact-name" placeholder="Ej: Ana García" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="contact-phone" class="form-label">Teléfono *</label>
+                                                    <input type="tel" class="form-control" id="contact-phone" placeholder="Ej: 3001234567" required>
+                                                    <div class="form-text">Sin espacios, guiones o símbolos</div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="contact-cargo" class="form-label">Cargo Aplicado</label>
+                                                    <input type="text" class="form-control" id="contact-cargo" placeholder="Ej: Desarrollador Senior">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="contact-experiencia" class="form-label">Experiencia</label>
+                                                    <input type="text" class="form-control" id="contact-experiencia" placeholder="Ej: 5 años">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="contact-estado" class="form-label">Estado del Proceso</label>
+                                                    <select class="form-control" id="contact-estado">
+                                                        <option value="">Seleccionar estado...</option>
+                                                        <option value="Pre-seleccionado">Pre-seleccionado</option>
+                                                        <option value="Citado entrevista">Citado entrevista</option>
+                                                        <option value="Pendiente revision">Pendiente revisión</option>
+                                                        <option value="Pendiente documentos">Pendiente documentos</option>
+                                                        <option value="En proceso">En proceso</option>
+                                                        <option value="Seleccionado">Seleccionado</option>
+                                                    </select>
+                                                </div>
+                                                <div class="d-grid gap-2">
+                                                    <button type="submit" class="btn btn-primary">
+                                                        <i class="fas fa-plus"></i> Agregar Contacto
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-secondary" onclick="clearManualForm()">
+                                                        <i class="fas fa-eraser"></i> Limpiar Formulario
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5><i class="fas fa-list"></i> Contactos Agregados</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="manual-contacts-preview" class="contact-preview">
+                                                <p class="text-muted">Agrega contactos usando el formulario</p>
+                                            </div>
+                                            <div id="manual-contacts-count" class="mt-2">
+                                                <strong>Total: <span id="manual-total-contacts">0</span> contactos</strong>
+                                            </div>
+                                            <div class="mt-3">
+                                                <button class="btn btn-outline-danger btn-sm" onclick="clearAllManualContacts()" id="clear-all-btn" style="display: none;">
+                                                    <i class="fas fa-trash"></i> Limpiar Todos
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Carga masiva -->
+                        <div class="tab-pane fade" id="bulk-contact" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5><i class="fas fa-upload"></i> Subir Contactos</h5>
+                                        </div>
+                                <div class="card-body">
+                                    <form id="contacts-form" enctype="multipart/form-data">
+                                        <div class="mb-3">
+                                            <label for="contactsFile" class="form-label">Archivo CSV</label>
+                                            <input type="file" class="form-control" id="contactsFile" accept=".csv" required>
+                                            <div class="form-text">
+                                                <strong>Básico:</strong> nombre, telefono<br>
+                                                <strong>⭐ RECOMENDADO:</strong> nombre, telefono, cargo_aplicado, estado_proceso<br>
+                                                <strong>Completo:</strong> incluye experiencia y disponibilidad<br>
+                                                <a href="guia-formatos.html" target="_blank" class="text-primary">
+                                                    <i class="fas fa-external-link-alt"></i> Ver guía completa de formatos
+                                                </a><br>
+                                                <a href="guia-excel.html" target="_blank" class="text-success">
+                                                    <i class="fas fa-file-excel"></i> ¿Cómo abrir en Excel con celdas separadas?
+                                                </a><br>
+                                                <a href="#" onclick="alert('Consulta GUIA_USO_PROFESIONAL.md en la carpeta del proyecto')" class="text-warning">
+                                                    <i class="fas fa-shield-alt"></i> 🚨 IMPORTANTE: Guía para evitar baneo (USO PROFESIONAL)
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-upload"></i> Cargar Contactos
+                                        </button>
+                                    </form>
+                                    
+                                    <div class="mt-3">
+                                        <h6>📥 Descargar Plantillas:</h6>
+                                        <div class="d-grid gap-2">
+                                            <a href="ejemplo_contactos.csv" download class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-download"></i> Plantilla Básica (nombre, teléfono)
+                                            </a>
+                                            <a href="candidatos_separados.csv" download class="btn btn-outline-warning btn-sm">
+                                                <i class="fas fa-star"></i> ⭐ RECOMENDADO: Candidatos (celdas separadas)
+                                            </a>
+                                            <a href="candidatos_completo_separados.csv" download class="btn btn-outline-success btn-sm">
+                                                <i class="fas fa-table"></i> Candidatos Completo (celdas separadas)
+                                            </a>
+                                            <a href="ejemplo_candidatos_simple.csv" download class="btn btn-outline-info btn-sm">
+                                                <i class="fas fa-download"></i> Formato Anterior (simple)
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5><i class="fas fa-list"></i> Vista Previa</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="contacts-preview" class="contact-preview">
+                                                <p class="text-muted">Sube un archivo CSV para ver la vista previa</p>
+                                            </div>
+                                            <div id="contacts-count" class="mt-2">
+                                                <strong>Total: <span id="total-contacts">0</span> contactos</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de Mensaje -->
+                <div id="message-section" class="section" style="display: none;">
+                    <h2>Configurar Mensaje</h2>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="message-templates" class="form-label">Plantillas Predefinidas</label>
+                                <select class="form-control" id="message-templates" onchange="loadMessageTemplate()">
+                                    <option value="">Seleccionar plantilla...</option>
+                                    <option value="citacion">🎯 Citación a Entrevista</option>
+                                    <option value="preseleccionado">✅ Candidato Pre-seleccionado</option>
+                                    <option value="documentos">📄 Solicitar Documentos</option>
+                                    <option value="seguimiento">📞 Seguimiento General</option>
+                                    <option value="seleccionado">🎉 Candidato Seleccionado</option>
+                                    <option value="personalizado">✏️ Mensaje Personalizado</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="message-text" class="form-label">Mensaje a Enviar</label>
+                                <textarea class="form-control" id="message-text" rows="8" placeholder="Selecciona una plantilla o escribe tu mensaje personalizado...">¡Hola {nombre}!
+
+Hemos revisado tu aplicación para el cargo de {cargo} y nos complace informarte que tu estado actual es: {estado}.
+
+Con tu experiencia de {experiencia}, consideramos que tienes un perfil muy interesante para nuestro equipo.
+
+📅 Te estaremos contactando próximamente para coordinar los siguientes pasos.
+
+Gracias por tu interés en unirte a nuestro equipo.
+
+Saludos cordiales,
+Equipo de Recursos Humanos</textarea>
+</invoke>
+                            </div>
+                            
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-magic"></i> Variables disponibles:</h6>
+                                <ul class="mb-0">
+                                    <li><code>{nombre}</code> - Nombre del candidato</li>
+                                    <li><code>{cargo}</code> - Cargo al que aplica</li>
+                                    <li><code>{experiencia}</code> - Años de experiencia</li>
+                                    <li><code>{estado}</code> - Estado del proceso</li>
+                                    <li><code>{empresa}</code> - Empresa actual</li>
+                                </ul>
+                            </div>
+
+                            <div class="message-template">
+                                <h6>Vista previa:</h6>
+                                <div id="message-preview">
+                                    ¡Hola <strong>Ana García</strong>!<br><br>
+                                    Hemos revisado tu aplicación para el cargo de <strong>Desarrollador Senior</strong> y nos complace informarte que tu estado actual es: <strong>Pre-seleccionado</strong>.<br><br>
+                                    Con tu experiencia de <strong>5 años</strong>, consideramos que tienes un perfil muy interesante para nuestro equipo.<br><br>
+                                    📅 Te estaremos contactando próximamente para coordinar los siguientes pasos.<br><br>
+                                    Gracias por tu interés en unirte a nuestro equipo.<br><br>
+                                    Saludos cordiales,<br>
+                                    Equipo de Recursos Humanos
+                                </div>
+                            </div>
+
+                            <div class="mt-3">
+                                <label for="delay-input" class="form-label">Retraso entre mensajes</label>
+                                <select class="form-control" id="delay-input">
+                                    <option value="10000" selected>⭐ 10 segundos (RECOMENDADO - Uso profesional)</option>
+                                    <option value="15000">🛡️ 15 segundos (EXTRA SEGURO)</option>
+                                    <option value="30000">🔐 30 segundos (MÁXIMA SEGURIDAD)</option>
+                                    <option value="8000">8 segundos (Seguro)</option>
+                                    <option value="5000">⚠️ 5 segundos (Riesgo medio)</option>
+                                </select>
+                                <div class="form-text">
+                                    <strong>🚨 IMPORTANTE:</strong> Mayor retraso = menor riesgo de baneo<br>
+                                    <strong>💼 Uso profesional:</strong> Mínimo 10 segundos entre mensajes
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de Envío -->
+                <div id="send-section" class="section" style="display: none;">
+                    <h2>Envío Masivo</h2>
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="send-summary" class="mb-4">
+                                <h5>Resumen del Envío</h5>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="text-center">
+                                            <h3 id="summary-contacts" class="text-primary">0</h3>
+                                            <p>Contactos</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="text-center">
+                                            <h3 id="summary-delay" class="text-info">5s</h3>
+                                            <p>Retraso</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="text-center">
+                                            <h3 id="summary-time" class="text-warning">~0min</h3>
+                                            <p>Tiempo estimado</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-warning mb-3">
+                                <h6><i class="fas fa-shield-alt"></i> LÍMITES DE SEGURIDAD ACTIVOS</h6>
+                                <ul class="mb-0">
+                                    <li><strong>Máximo 50 contactos</strong> por envío</li>
+                                    <li><strong>Mínimo 8 segundos</strong> entre mensajes</li>
+                                    <li><strong>Solo horarios comerciales</strong> recomendados</li>
+                                </ul>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button id="start-sending" class="btn btn-success btn-lg" disabled>
+                                    <i class="fas fa-paper-plane"></i> Iniciar Envío Profesional Seguro
+                                </button>
+                                <button id="stop-sending" class="btn btn-danger" style="display: none;">
+                                    <i class="fas fa-stop"></i> Detener Envío
+                                </button>
+                            </div>
+
+                            <!-- Progreso -->
+                            <div id="progress-container" class="progress-container" style="display: none;">
+                                <h5>Progreso del Envío</h5>
+                                <div class="progress mb-3">
+                                    <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" 
+                                         role="progressbar" style="width: 0%"></div>
+                                </div>
+                                <div class="row text-center">
+                                    <div class="col-md-3">
+                                        <h4 id="sent-count" class="text-success">0</h4>
+                                        <p>Enviados</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h4 id="failed-count" class="text-danger">0</h4>
+                                        <p>Fallidos</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h4 id="remaining-count" class="text-info">0</h4>
+                                        <p>Restantes</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h4 id="total-count" class="text-primary">0</h4>
+                                        <p>Total</p>
+                                    </div>
+                                </div>
+                                <div class="alert alert-info">
+                                    <strong>Enviando a:</strong> <span id="current-contact">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

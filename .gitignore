@@ -1,0 +1,67 @@
+# Dependencias
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Archivos de entorno
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Sesión de WhatsApp (IMPORTANTE: No versionar)
+.wwebjs_auth/
+.wwebjs_cache/
+session.json
+
+# Archivos temporales y uploads
+uploads/*
+!uploads/.gitkeep
+temp/
+*.tmp
+
+# Reportes (contienen datos sensibles)
+reports/*
+!reports/.gitkeep
+
+# Logs
+logs/
+*.log
+
+# Sistema operativo
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor e IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Backup files
+*.bak
+*.backup
+*.orig
+
+# Archivos de prueba y datos sensibles
+test-contacts.csv
+contactos-reales.csv
+*.private.csv
+
+# Archivos de certificados y keys
+*.pem
+*.key
+*.cert
+
+# Cache de runtime
+.cache/
+.npm/
